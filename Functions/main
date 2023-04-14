@@ -1,0 +1,38 @@
+#!/bin/bash
+source ./utils/vpc_create
+source ./utils/instance
+source ./utils/delete
+
+script() {
+        local arg=$1
+        if [ "$arg" = "create" ]; then
+        VPC_ID=$(create_vpc)
+                echo "VPC ${VPC_ID} created!!"
+        SUBNET_ID0=$(create_subnet "${VPC_ID}" "10.0.0.0/24" "us-east-1a")
+                echo "Subnet ${SUBNET_ID0} created!!"
+        SUBNET_ID1=$(create_subnet "${VPC_ID}" "10.0.1.0/24" "us-east-1a")
+                echo "Subnet ${SUBNET_ID1} created!!"
+        SUBNET_ID2=$(create_subnet "${VPC_ID}" "10.0.2.0/24" "us-east-1a")
+                echo "Subnet ${SUBNET_ID2} created!!"
+        SUBNET_ID3=$(create_subnet "${VPC_ID}" "10.0.3.0/24" "us-east-1a")
+                echo "Subnet ${SUBNET_ID3} created!!"
+        public_ip
+        IGW_ID=$(create_igw)
+                echo "Internet Gateway ${IGW_ID} created!!"
+        attach_igw "${VPC_ID}" "${IGW_ID}"
+        RTB_ID=$(create_route_table "${VPC_ID}")
+                echo "Route Table ${RTB_ID} created!"
+        create_route "${RTB_ID}" "${IGW_ID}"
+        associate_route_table "${RTB_ID}" "${SUBNET_ID2}"
+        sec_group
+        create_ec2 "Newkeypair" "${SUBNET_ID3}" "$SG_ID" "NewInstance"
+        elif [ "$arg" = "delete" ]; then
+        clean_ec2
+        clean_subnets
+        clean_igw
+        clean_sg
+        clean_vpc
+fi
+}
+script "$1"
+
