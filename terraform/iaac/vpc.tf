@@ -13,6 +13,7 @@ resource "aws_subnet" "my_subnet" {
   vpc_id = aws_vpc.my_vpc.id
   cidr_block = var.subnet_cidr_block
   availability_zone = "us-east-1a"
+  map_public_ip_on_launch = true
   tags = {
     Name = "my-Subnet"
   }
@@ -45,18 +46,18 @@ resource "aws_route_table_association" "my-assoc" {
 }
 
 #Assugn a public IP
-resource "aws_eip" "my_eip" {
-        vpc = true
-}
+# resource "aws_eip" "my_eip" {
+#         vpc = true
+# }
 
-resource "aws_network_interface" "my_eni" {
-        subnet_id = aws_subnet.my_subnet.id
-}
+# resource "aws_network_interface" "my_eni" {
+#         subnet_id = aws_subnet.my_subnet.id
+# }
 
-resource "aws_eip_association" "my_eip_assoc" {
-        allocation_id = aws_eip.my_eip.id
-        network_interface_id = aws_network_interface.my_eni.id
-}
+# resource "aws_eip_association" "my_eip_assoc" {
+#         allocation_id = aws_eip.my_eip.id
+#         network_interface_id = aws_network_interface.my_eni.id
+# }
 
 
 
